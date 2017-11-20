@@ -3,13 +3,14 @@ from bs4 import BeautifulSoup
 import re
 import smtplib
 import certifi
+import json
 
 class Employee(object):
 
     def __init__(self, user_info): # user_info is a dict containing name, pass number, and email
         self.name = user_info['name']
         self.pass_number = user_info['pass_number']
-        self.password = 'GCT123'
+        self.password = user_info['password']
         self.email = user_info['email']
         self.schedule = []
         self.three_day_outlook = []
@@ -55,17 +56,15 @@ class Employee(object):
                     self.schedule[-1]['activity'] = child.string
         
     def send_email(self):
-        username = 'ted.pindred'
-        password = 'Kuystad14645%'
-        sender = 'ted.pindred@gmail.com'
+        
         message = 'Hello {},\n\nToday you are scheduled for {}.\n\nYou were recorded for {} hours in {}.'.format(self.name, self.schedule[0]['activity'], 'test', 'test')
         
         
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.ehlo()
         server.starttls()
-        server.login(username,password)
-        server.sendmail(sender, self.email, message)         
+        server.login(senderinfo["username"],senderinfo["password"])
+        server.sendmail(senderinfo["sender"], self.email, message)         
         print ("Successfully sent email")
         server.quit()
         
