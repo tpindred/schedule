@@ -1,4 +1,6 @@
 scratch/
 __pycache__/
-senderinfo.json*
-userinfo.json*
+senderinfo.json
+userinfo.json
+/*\~
+/*~
