@@ -35,9 +35,8 @@ class Employee(object):
         with requests.Session() as session:
             jar = requests.cookies.RequestsCookieJar()
             jar.set(cookie_1, cookie_2, domain='secure.winterparkresort.com')
-            get = session.get(get_url, cookies=jar, verify=False)# THIS IS INSECURE, ONLY USE 'verify=False' FOR TESTING
-            #jar.set(session.cookies)
-            post = session.post(post_url, cookies=jar, data=payload, verify=False) # THIS IS INSECURE, ONLY USE 'verify=False' FOR TESTING
+            get = session.get(get_url, cookies=jar, verify=False) #Try to find a workaround for verify=False
+            post = session.post(post_url, cookies=jar, data=payload, verify=False) 
             return post
 
     def update_schedule(self, post_response):
@@ -47,7 +46,6 @@ class Employee(object):
         for row in rows:
             self.schedule.append({})
             for count, child in enumerate(row.children):
-                # really need to find more pythonic way than a series of ifs
                 if count == 0:
                     self.schedule[-1]['date'] = child.string
                 elif count == 1:
@@ -56,19 +54,16 @@ class Employee(object):
                     self.schedule[-1]['activity'] = child.string
         
     def send_email(self):
-        
-        message = 'Hello {},\n\nToday you are scheduled for {}.\n\nYou were recorded for {} hours in {}.'.format(self.name, self.schedule[0]['activity'], 'test', 'test')
-        
-        
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.ehlo()
-        server.starttls()
-        server.login(senderinfo["username"],senderinfo["password"])
-        server.sendmail(senderinfo["sender"], self.email, message)         
-        print ("Successfully sent email")
-        server.quit()
-        
-        
-        
+        message = 'Hello {},\n\nToday you are scheduled for {}.'.format(self.name, self.schedule[0]['activity'])
+        try:
+            server = smtplib.SMTP('smtp.gmail.com:587')
+            server.ehlo()
+            server.starttls()
+            server.login(senderinfo["username"],senderinfo["password"])
+            server.sendmail(senderinfo["sender"], self.email, message)         
+            print ("Successfully sent email")
+            server.quit()
+        except SMTPException:
+            print ("Error: unable to send email")
         
     
